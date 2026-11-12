@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CoreLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f7;--grid:#dfe4ef;--ink:#13203d;--mute:#58627a;--card:#ffffff;--line:#cbd3e4;--accent:#2a45d4;--accent2:#c2410c;--glow:#0891b2;--on-accent:#fff;
+--code-bg:#101c38;--code-ink:#dbe4ff;--sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--head:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1527;--grid:#16203a;--ink:#e7ecf8;--mute:#96a2bd;--card:#151f38;--line:#283555;--accent:#93a8ff;--accent2:#ffa45c;--glow:#3ddcff;--on-accent:#0e1527;--code-bg:#0a1124;--code-ink:#dbe4ff}}
+:root[data-theme="dark"]{--bg:#0e1527;--grid:#16203a;--ink:#e7ecf8;--mute:#96a2bd;--card:#151f38;--line:#283555;--accent:#93a8ff;--accent2:#ffa45c;--glow:#3ddcff;--on-accent:#0e1527;--code-bg:#0a1124;--code-ink:#dbe4ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;background-position:-1px -1px;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;min-height:100vh}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 22px 56px}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 16px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.brand{font-family:var(--head);font-weight:800;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.brand::before{content:"";width:20px;height:20px;border-radius:6px;background:var(--accent);box-shadow:inset 0 0 0 5px var(--card),inset 0 0 0 20px var(--accent);outline:2.5px solid var(--accent);outline-offset:-2.5px}
+.crumb{color:var(--mute);font-family:var(--mono);font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px 12px}
+.crumb:empty{display:none}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(2rem,5.2vw,3.2rem);line-height:1.05;margin:40px 0 12px;letter-spacing:-.025em;max-width:22ch;text-wrap:balance}
+h2{font-family:var(--head);font-weight:600;font-size:1.1rem;margin:36px 0 14px;color:var(--ink);display:flex;align-items:center;gap:14px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+.lead{color:var(--mute);max-width:62ch;margin:0 0 26px;font-size:1.02rem}
+.back{all:unset;cursor:pointer;color:var(--accent);margin-top:28px;display:inline-block;font-weight:600;padding:6px 0}
+.back:hover,.back:focus-visible{text-decoration:underline;text-underline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,box-shadow .15s}
+.card:hover,.card:focus-visible,.card[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 10px 24px -14px color-mix(in srgb,var(--accent) 70%,transparent)}
+.card:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.card .t{font-family:var(--head);font-weight:800;font-size:1.3rem;line-height:1.2;letter-spacing:-.01em}
+.card .tag{font-size:.86rem;color:var(--mute)}
+.card ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.card li{padding:7px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.card li:last-child{border-bottom:0}
+.go{margin-top:auto;font-weight:600;color:var(--accent);font-size:.9rem}
+.num{font-size:.78rem;color:var(--mute);font-family:var(--mono)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.76rem;border:1px solid var(--line);color:var(--mute);background:var(--bg);border-radius:6px;padding:1px 8px}
+.badge{font-size:.74rem;color:var(--mute);border:1px solid var(--line);background:var(--bg);padding:1px 10px;border-radius:99px;align-self:flex-start}
+.status{margin-top:28px;border-left:4px solid var(--accent2);padding:12px 16px;background:var(--card);border-radius:0 10px 10px 0;font-size:.92rem}
+
+.tier{font-size:.68rem;padding:2px 7px;border-radius:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.tier.Flagship{background:color-mix(in srgb,var(--accent2) 24%,transparent);color:var(--accent2);border:1px solid var(--accent2)}
+.tier.Standard{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);border:1px solid var(--accent)}
+.tier.Light{background:color-mix(in srgb,var(--mute) 20%,transparent);color:var(--mute);border:1px solid var(--line)}
+.top-meta{display:flex;justify-content:space-between;align-items:center}
+.tools-nav{display:flex;gap:10px;margin:22px 0;flex-wrap:wrap}
+.tool-btn{background:var(--card);border:1.5px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer;font:inherit;font-size:.85rem;font-weight:500;color:var(--ink)}
+.tool-btn:hover,.tool-btn.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+
+footer{margin-top:40px;color:var(--mute);font-size:.78rem;border-top:1px solid var(--line);padding-top:12px}
+
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:6px;padding:18px;margin-top:22px}
+.panel h3{margin:0 0 10px;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent2)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input.in{flex:1;min-width:200px;padding:10px;font:inherit;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:6px}
+.btn{font:inherit;cursor:pointer;padding:10px 16px;border-radius:6px;border:1.5px solid var(--accent);background:var(--accent);color:var(--bg);font-weight:500}
+.btn.alt{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.stage{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+pre.code{margin:0;padding:12px;background:var(--bg);border-radius:6px;overflow-x:auto;font-size:.85rem}
+.ln{display:block;padding:1px 6px;border-left:3px solid transparent;white-space:pre}
+.ln.on{background:color-mix(in srgb,var(--accent) 22%,transparent);border-left-color:var(--accent)}
+.cells{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cell{border:1.5px solid var(--line);border-radius:4px;min-width:44px;padding:4px 8px;text-align:center}
+.cell small{display:block;color:var(--mute);font-size:.68rem}
+.cell.out{opacity:.38}.cell em{display:block;font-style:normal;font-weight:700;font-size:.72rem;color:var(--accent2);min-height:1.1em}
+.cell.on{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 22%,transparent)}
+table.v{border-collapse:collapse;width:100%;font-size:.85rem}
+table.v td{border-bottom:1px dashed var(--line);padding:4px 6px}
+table.v td:first-child{color:var(--mute);width:45%}
+.note{margin:12px 0 0;padding:10px 12px;border-left:4px solid var(--accent2);background:var(--bg)}
+.ctl{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.stack div{border:1.5px solid var(--accent);padding:3px 10px;margin-top:-1.5px;text-align:center}
+.refs a{color:var(--accent)}
+.refs li{margin:6px 0}
+
+.opt{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer;background:var(--bg)}
+.opt:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--bg))}
+button.chip{font:inherit;font-size:.78rem;background:transparent;cursor:pointer}
+button.chip:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+svg.flow{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.flow .nd{fill:var(--card);stroke:var(--ink);stroke-width:1.6}
+.flow .nd.on{fill:color-mix(in srgb,var(--accent) 38%,var(--card));stroke:var(--accent);stroke-width:3}
+.flow .eg{fill:none;stroke:var(--mute);stroke-width:1.6}
+.flow text{fill:var(--ink);font:12px var(--mono);text-anchor:middle;dominant-baseline:central}
+.flow text.lb{fill:var(--accent2);font-weight:500;font-size:11px}
+.flow marker path{fill:var(--mute)}
+.legend{margin-bottom:10px}
+
+.cir{max-width:520px}
+.cw{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
+.cp line,.cp polyline,.cp circle,.cp path,.cp polygon{fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round}
+.cp circle.cf{fill:var(--card)}
+.cp polygon.ar{fill:var(--ink)}
+.cp text,.ct{fill:var(--ink);stroke:none;font:12px var(--mono)}
+.cn{fill:var(--ink);stroke:none}
+.cb{fill:var(--card);stroke:var(--ink);stroke-width:1.8}
+.cb.p{fill:color-mix(in srgb,var(--accent2) 25%,var(--card))}
+.cb.n{fill:color-mix(in srgb,var(--accent) 25%,var(--card))}
+.cb.dep{fill:color-mix(in srgb,var(--mute) 30%,transparent);stroke-dasharray:5 3}
+.cb.on{stroke:var(--accent);stroke-width:3.4}
+
+.sl{display:grid;grid-template-columns:minmax(150px,1.2fr) 2fr minmax(90px,.8fr);gap:10px;align-items:center;margin:8px 0}
+.sl input[type=range]{width:100%;accent-color:var(--accent)}
+.sl output{font-weight:500;color:var(--accent);text-align:right}
+.sl label{font-size:.85rem}
+@media (max-width:560px){.sl{grid-template-columns:1fr auto}.sl input{grid-column:1/-1}}
+svg.plot{width:100%;max-width:560px;height:auto;display:block;margin:0 auto;color:var(--ink)}
+.plot .gr{stroke:var(--line);stroke-width:1}
+.plot .ax{stroke:var(--ink);stroke-width:1.4}
+.plot .tx{fill:var(--mute);font:11px var(--mono)}
+.plot .tt{fill:var(--ink);font:500 12px var(--mono)}
+.plot .ln{fill:none;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.plot .mk{stroke:var(--accent2);stroke-width:1.3;stroke-dasharray:5 4}
+.plot .ml{fill:var(--accent2);font:11px var(--mono)}
+.plot .sl2{font:11px var(--mono)}
+.rd{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:4px 16px;font-size:.86rem}
+.rd div:nth-child(odd){color:var(--mute)}
+.rd div:nth-child(even){font-weight:500;overflow-wrap:anywhere}
+.vis{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+
+/* circuit highlight: bright glow, everything else dims, current "flows" along highlighted wires */
+.cir.hl .cw:not(.on),.cir.hl .cp:not(.on),.cir.hl .cn,.cir.hl .ct{opacity:.28;transition:opacity .25s}
+.ct.lt{fill:#fff}.cir.ws.hl .ct{opacity:1}.cir.ws.hl .cw:not(.on){opacity:.7}
+.cw.cwh{stroke:var(--glow);stroke-width:10;opacity:.30;stroke-linecap:round}
+.cw.on{stroke:var(--glow);stroke-width:3.8;stroke-dasharray:10 7;animation:cflow .7s linear infinite;filter:url(#glow)}
+.cp.on line,.cp.on polyline,.cp.on circle,.cp.on path,.cp.on polygon,.cb.on{stroke:var(--glow);stroke-width:3.6}
+.cp.on{filter:url(#glow);animation:cpulse 1.3s ease-in-out infinite}
+.cp.on polygon.ar{fill:var(--glow)}
+.cp.on text{fill:var(--glow);font-weight:700;font-size:13px}
+.flow .nd.on{stroke:var(--glow);fill:color-mix(in srgb,var(--glow) 30%,var(--card));stroke-width:3.2;filter:drop-shadow(0 0 7px var(--glow))}
+@keyframes cflow{to{stroke-dashoffset:-17}}
+@keyframes cpulse{0%,100%{opacity:1}50%{opacity:.78}}
+@media (prefers-reduced-motion:reduce){.cw.on,.cp.on{animation:none}}
+.banner{position:fixed;left:12px;right:12px;bottom:12px;background:#b91c1c;color:#fff;padding:12px 14px;border-radius:8px;font-size:.9rem;z-index:50;display:none}
+
+.mat{border-collapse:separate;border-spacing:0;margin:8px 0;font-size:.95rem}
+.mat td{padding:4px 10px;text-align:right;min-width:48px;border-bottom:1px dashed var(--line)}
+.mat td.on{background:color-mix(in srgb,var(--glow) 28%,transparent);color:var(--ink);font-weight:700;outline:2px solid var(--glow);border-radius:4px}
+.mat td.sep{border-left:2px solid var(--ink)}
+.vctl{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;font-size:.8rem;color:var(--mute);margin-top:4px}
+.vctl input{accent-color:var(--accent)}
+svg.surf{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+.surf .tx{fill:var(--mute);font:11px var(--mono)}
+
+.cb.wood{fill:#d9b98a}.cb.wood2{fill:#b98d55}.cb.steel{fill:#c3ced6}.cb.steel2{fill:#8fa2b0}.cb.weld{fill:#f59e0b}.cb.tool{fill:#4b5563}.cb.dark{fill:#374151}.cb.sheet{fill:#cfe3f1}.cb.cutl{fill:#fca5a5;fill-opacity:.8}.cb.cut{fill:var(--bg);stroke-dasharray:5 4}.cb.red{fill:#ef4444}.cb.green{fill:#22c55e}.cb.blue{fill:#3b82f6}.cb.yellow{fill:#facc15}.cb.skin{fill:#f2c9a0}.cb.flame{fill:#fb923c;fill-opacity:.85}
+.cir.hl .cb.on{filter:url(#glow);stroke:var(--glow);stroke-width:3.6}
+
+/* restyle overrides */
+.tier{font-size:.72rem;padding:1px 9px;border-radius:99px;font-weight:600;letter-spacing:0;text-transform:none}
+.tools-nav{gap:8px;margin:22px 0}
+.tool-btn{border:1px solid var(--line);border-radius:10px;padding:9px 15px;font-family:var(--sans);font-size:.9rem;font-weight:600;transition:border-color .15s,background .15s}
+.tool-btn:focus-visible,.btn:focus-visible,.chip:focus-visible,.back:focus-visible,input:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+footer{margin-top:48px;color:var(--mute);font-size:.8rem;border-top:1px solid var(--line);padding-top:14px}
+.panel{border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:20px}
+.panel h3{margin:0 0 12px;font-family:var(--head);font-size:1rem;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink)}
+input.in{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+input.in:focus{border-color:var(--accent)}
+.btn{border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);font-weight:600;padding:10px 18px}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+.btn.alt{background:transparent;color:var(--accent)}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 8px;font-family:var(--mono);font-size:.84rem;line-height:1.7}
+.ln{border-left-width:3px;border-radius:0 4px 4px 0}
+.ln.on{background:color-mix(in srgb,var(--glow) 26%,transparent);border-left-color:var(--glow);color:#fff}
+.cell{border:1px solid var(--line);border-radius:8px;font-family:var(--mono);background:var(--bg)}
+.cell.on{border-color:var(--glow);background:color-mix(in srgb,var(--glow) 22%,var(--card));box-shadow:0 0 0 1px var(--glow)}
+.cell em{color:var(--glow)}
+table.v td{border-bottom:1px solid var(--line)}
+.note{border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;background:var(--bg)}
+.stack div{border:1px solid var(--accent);border-radius:4px;font-family:var(--mono)}
+.opt{border:1px solid var(--line);border-radius:10px}
+.sl output{font-family:var(--mono);font-size:.85rem}
+.mat td{border-bottom:1px solid var(--line);font-family:var(--mono)}
+.banner{border-radius:12px}
+@media (max-width:560px){.wrap{padding:12px 12px 40px}h1{margin-top:28px}.grid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="banner" id="banner" role="alert"></div>
+<div class="wrap">
+  <header><div class="brand">CoreLab</div><div class="crumb" id="crumb"></div></header>
+  <main id="screen"></main>
+  <footer>CoreLab – Data Structures Lab PBL · Jaypee Institute of Information Technology, Noida</footer>
+</div>
+<script>
+let DATA = [];
+function showErr(msg){const b=document.getElementById('banner');b.textContent=msg;b.style.display='block';clearTimeout(showErr.t);showErr.t=setTimeout(()=>b.style.display='none',6000);}
+window.addEventListener('unhandledrejection',e=>{showErr('Lost contact with the CoreLab server. Check that ./corelab is still running in Ubuntu, then reload this page (Ctrl+F5).');});
+const getJSON=u=>fetch(u,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('server '+r.status);return r.json();});
+const state = {screen:'semester', sem:null, subject:null, topic:null, opt:0};
+const screens = {semester:renderSemester, subject:renderSubject, topic:renderTopic, simulate:renderSim, apps:renderApps, benchmark:renderBenchmark};
+// simulate: added in Window 4
+
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const curSem = () => DATA.find(s=>s.id===state.sem);
+const curSub = () => curSem().subjects.find(s=>s.name===state.subject);
+
+function go(name){ state.screen=name; render(); window.scrollTo(0,0); }
+function render(){
+  const root=document.getElementById('screen'); root.innerHTML='';
+  const c=document.getElementById('crumb');
+  c.textContent = ['Window 1 · Semester','Window 2 · '+(state.sem?curSem().name:''),'Window 3 · '+(state.subject||''),'Window 4 · '+(state.topic||'')][['semester','subject','topic','simulate'].indexOf(state.screen)];
+  screens[state.screen](root);
+}
+function backBtn(label,target){
+  const b=document.createElement('button'); b.className='back'; b.textContent='← '+label; b.onclick=()=>go(target); return b;
+}
+
+/* WINDOW 1: semester */
+function renderSemester(root){
+  root.innerHTML=`<h1>Pick your semester.</h1>
+  <p class="lead">Three semesters, twelve subjects. Choose a semester, then a subject, then a topic, and watch it run step by step.</p>
+  <div class="tools-nav">
+    <button class="tool-btn" onclick="go('apps')">🚀 Cross-Cutting Applications</button>
+    <button class="tool-btn" onclick="go('benchmark')">⚡ BenchmarkRunner & ProgressStore</button>
+  </div>
+  <div class="grid"></div>`;
+  const grid=root.querySelector('.grid');
+  DATA.forEach(s=>{
+    const b=document.createElement('button'); b.className='card';
+    b.innerHTML=`<div class="t">${esc(s.name)}</div><div class="tag">${esc(s.tag)}</div>
+      <ul>${s.subjects.map(x=>`<li>${esc(x.name)}</li>`).join('')}</ul><div class="go">Open ${esc(s.name)} →</div>`;
+    b.onclick=()=>{state.sem=s.id; go('subject');};
+    grid.appendChild(b);
+  });
+}
+
+/* WINDOW 2: subject of the chosen semester */
+function renderSubject(root){
+  const s=curSem();
+  root.innerHTML=`<h1>${esc(s.name)}: choose a subject.</h1>
+  <p class="lead">${esc(s.tag)}. Subjects marked “syllabus pending” will open once their topics are added.</p><div class="grid"></div>`;
+  const grid=root.querySelector('.grid');
+  s.subjects.forEach(sub=>{
+    const b=document.createElement('button'); b.className='card';
+    const n=sub.topics.length;
+    b.innerHTML=`<div class="t">${esc(sub.name)}</div>
+      ${n?`<div class="num">${n} topics</div>`:`<span class="badge">syllabus pending</span>`}
+      <div class="go">${n?'View topics →':'Open →'}</div>`;
+    b.onclick=()=>{state.subject=sub.name; go('topic');};
+    grid.appendChild(b);
+  });
+  root.appendChild(backBtn('Back to semesters','semester'));
+}
+
+/* WINDOW 3: topics of the chosen subject, grouped */
+function renderTopic(root){
+  const sub=curSub();
+  root.innerHTML=`<h1>${esc(sub.name)}: choose a topic.</h1>`;
+  if(!sub.topics.length){
+    root.innerHTML+=`<div class="status">The syllabus for this subject has not been added yet.</div>`;
+    root.appendChild(backBtn('Back to subjects','subject')); return;
+  }
+  root.insertAdjacentHTML('beforeend',`<p class="lead">${sub.topics.length} topics. Pick one to open its simulation.</p><div id="groups"></div><div class="status" id="status" aria-live="polite">Select a topic.</div>`);
+  const groups=root.querySelector('#groups'); let last=null, grid=null, i=0;
+  sub.topics.forEach(t=>{
+    if(t.group!==last){ last=t.group; groups.insertAdjacentHTML('beforeend',`<h2>${esc(t.group)}</h2>`); grid=document.createElement('div'); grid.className='grid'; groups.appendChild(grid); }
+    i++;
+    const b=document.createElement('button'); b.className='card';
+    const tr = t.tier || 'Standard';
+    b.innerHTML=`<div class="top-meta"><div class="num">Topic ${String(i).padStart(2,'0')}</div><span class="tier ${tr}">${tr}</span></div><div class="t" style="font-size:1.05rem">${esc(t.name)}</div>
+      ${t.items.length?`<div class="chips">${t.items.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}`;
+    b.onclick=()=>{
+      state.topic=t.name; state.opt=0;
+      document.querySelectorAll('#groups .card').forEach(c=>c.setAttribute('aria-pressed',c===b));
+      if(screens.simulate){go('simulate');return;}
+      document.getElementById('status').textContent=`“${t.name}” selected. The simulation window (Window 4) is the next one to be built.`;
+    };
+    grid.appendChild(b);
+  });
+  root.appendChild(backBtn('Back to subjects','subject'));
+}
+
+
+/* CROSS-CUTTING APPLICATIONS: campus_navigator, course_prereq_checker, autocomplete, task_scheduler */
+async function renderApps(root){
+  root.innerHTML=`<h1>Cross-Cutting Applications</h1>
+  <p class="lead">Real-world applications built by reusing underlying data structures (Graphs, DAGs, Tries, Heaps).</p>
+  <div class="tools-nav">
+    <button class="tool-btn on" id="tabNav">📍 Campus Navigator</button>
+    <button class="tool-btn" id="tabPre">📚 Course Prereq Checker</button>
+    <button class="tool-btn" id="tabAuto">🔍 Autocomplete</button>
+    <button class="tool-btn" id="tabSched">⏱️ Task Scheduler</button>
+  </div>
+  <div id="appContainer" class="panel"></div>`;
+  root.appendChild(backBtn('Back to semesters','semester'));
+
+  const c = root.querySelector('#appContainer');
+  const tabs = [root.querySelector('#tabNav'), root.querySelector('#tabPre'), root.querySelector('#tabAuto'), root.querySelector('#tabSched')];
+  function setTab(idx){
+    tabs.forEach((t, i)=>t.className = 'tool-btn' + (i===idx?' on':''));
+  }
+
+  // 1. Campus Navigator (Interactive Simulation & Dijkstra Visualizer)
+  async function showNav(){
+    setTab(0);
+    const data = await getJSON('/api/campus_navigator');
+    let currentData = data;
+    let stepIndex = -1;
+    let timer = null;
+    let isPlaying = false;
+
+    c.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+        <div>
+          <h3 style="margin:0 0 4px 0">📍 Campus Navigator (Dijkstra's Algorithm Simulation)</h3>
+          <p style="margin:0;font-size:0.92rem;color:var(--mute)">Interactive topological campus map running Dijkstra's shortest-path algorithm with step-by-step min-heap relaxation inspection.</p>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="tool-btn" id="preGateCC" style="padding:4px 10px;font-size:0.8rem">Main Gate → CC</button>
+          <button class="tool-btn" id="preH1AcadA" style="padding:4px 10px;font-size:0.8rem">Hostel 1 → Acad A</button>
+          <button class="tool-btn" id="preSportLib" style="padding:4px 10px;font-size:0.8rem">Sports → Library</button>
+          <button class="tool-btn" id="preCafeH2" style="padding:4px 10px;font-size:0.8rem">Cafeteria → Hostel 2</button>
+        </div>
+      </div>
+
+      <div class="row" style="background:var(--card);padding:12px;border:1px solid var(--line);border-radius:8px;align-items:center;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+        <div style="display:flex;align-items:center;gap:6px;flex:1">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--mute)">FROM:</label>
+          <select id="selFrom" class="in" style="flex:1">${data.places.map(p=>`<option value="${esc(p)}" ${p===data.from?'selected':''}>${esc(p)}</option>`).join('')}</select>
+        </div>
+        <button class="tool-btn" id="btnSwap" title="Swap From and To" style="padding:6px 12px;font-size:1.1rem">⇄</button>
+        <div style="display:flex;align-items:center;gap:6px;flex:1">
+          <label style="font-size:0.82rem;font-weight:600;color:var(--mute)">TO:</label>
+          <select id="selTo" class="in" style="flex:1">${data.places.map(p=>`<option value="${esc(p)}" ${p===data.to?'selected':''}>${esc(p)}</option>`).join('')}</select>
+        </div>
+        <button class="btn" id="btnRoute" style="padding:8px 18px;font-weight:bold">Compute Shortest Path</button>
+      </div>
+
+      <!-- METRICS BAR -->
+      <div id="navMetrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px"></div>
+
+      <!-- MAP CONTAINER -->
+      <div style="position:relative;background:radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);border:1px solid #334155;border-radius:10px;overflow:hidden;box-shadow:inset 0 2px 8px rgba(0,0,0,0.5)">
+        <div style="position:absolute;top:10px;left:14px;z-index:10;color:#94a3b8;font-size:0.78rem;pointer-events:none;display:flex;gap:12px">
+          <span>💡 <b>Tip:</b> Click any building to set Origin / Destination</span>
+          <span>🟢 Start Node</span>
+          <span>🎯 Target Node</span>
+          <span>✨ Optimal Route</span>
+        </div>
+        <svg id="campusSvg" viewBox="0 0 820 480" style="width:100%;height:auto;display:block"></svg>
+      </div>
+
+      <!-- STEP-BY-STEP DIJKSTRA CONTROLLER -->
+      <div style="margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:bold;font-size:0.92rem">⚙️ Dijkstra Step Visualizer:</span>
+            <button class="btn" id="btnPlayPause" style="padding:4px 12px;font-size:0.82rem">▶ Play Step-by-Step</button>
+            <button class="tool-btn" id="btnStepPrev" style="padding:4px 10px;font-size:0.82rem">⏮ Prev</button>
+            <button class="tool-btn" id="btnStepNext" style="padding:4px 10px;font-size:0.82rem">⏭ Next</button>
+            <button class="tool-btn" id="btnStepReset" style="padding:4px 10px;font-size:0.82rem">↺ Final Result</button>
+          </div>
+          <div id="stepCounter" style="font-size:0.84rem;color:var(--mute);font-weight:600">Showing Optimal Route</div>
+        </div>
+        <div id="stepExplanation" style="font-size:0.86rem;padding:8px 12px;background:var(--bg);border-radius:6px;border-left:4px solid var(--accent);color:var(--ink);min-height:20px"></div>
+        <div id="pqStateContainer" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:0.8rem"></div>
+      </div>
+
+      <div id="pathBreakdown" style="margin-top:14px"></div>
+    `;
+
+    function updateMetrics(res){
+      const m = c.querySelector('#navMetrics');
+      m.innerHTML = `
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px">
+          <div style="font-size:0.75rem;color:var(--mute);text-transform:uppercase;font-weight:600">Total Distance</div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--accent)">${res.total_distance_meters} <span style="font-size:0.85rem;font-weight:normal">meters</span></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px">
+          <div style="font-size:0.75rem;color:var(--mute);text-transform:uppercase;font-weight:600">Walking Time</div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--ink)">${res.est_walk_time_min} <span style="font-size:0.85rem;font-weight:normal">min</span></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px">
+          <div style="font-size:0.75rem;color:var(--mute);text-transform:uppercase;font-weight:600">Estimated Steps</div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--ink)">${res.est_steps} <span style="font-size:0.85rem;font-weight:normal">steps</span></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px">
+          <div style="font-size:0.75rem;color:var(--mute);text-transform:uppercase;font-weight:600">Calorie Burn</div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--accent2)">~${res.est_calories} <span style="font-size:0.85rem;font-weight:normal">kcal</span></div>
+        </div>
+      `;
+
+      const pb = c.querySelector('#pathBreakdown');
+      pb.innerHTML = `
+        <div style="font-weight:bold;font-size:0.9rem;margin-bottom:8px">Detailed Waypoint Sequence (${res.path.length} buildings):</div>
+        <div class="cells">
+          ${res.path.map((step, i)=>{
+            const isStart = i === 0;
+            const isEnd = i === res.path.length - 1;
+            return `<div class="cell ${isStart?'alert':(isEnd?'on':'')}" style="min-width:140px">
+              <small>${isStart ? '🚩 START' : (isEnd ? '🎯 DESTINATION' : `Stop #${i}`)}</small>
+              <b style="font-size:0.9rem">${esc(step)}</b>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderMap(res, activeStep){
+      const svg = c.querySelector('#campusSvg');
+      const nodes = res.nodes;
+      const edges = res.edges;
+      const pathSet = new Set(res.path);
+      const pathEdgeKeys = new Set();
+      for (let i = 0; i + 1 < res.path.length; ++i) {
+        pathEdgeKeys.add(`${res.path[i]}--${res.path[i+1]}`);
+        pathEdgeKeys.add(`${res.path[i+1]}--${res.path[i]}`);
+      }
+
+      // Determine step highlights if in step-by-step mode
+      let stepCurrentNode = null;
+      let stepVisitedSet = new Set();
+      let stepRelaxedKeys = new Set();
+      if (activeStep !== undefined && activeStep >= 0 && res.steps && res.steps[activeStep]) {
+        const st = res.steps[activeStep];
+        stepCurrentNode = st.curr;
+        stepVisitedSet = new Set(st.visited);
+        (st.relaxations || []).forEach(r => {
+          stepRelaxedKeys.add(`${st.curr}--${r.to}`);
+          stepRelaxedKeys.add(`${r.to}--${st.curr}`);
+        });
+      }
+
+      let h = `
+        <defs>
+          <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <radialGradient id="campusBldgGrad" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#3b82f6" />
+            <stop offset="100%" stop-color="#1d4ed8" />
+          </radialGradient>
+        </defs>
+
+        <!-- Subtle Campus Grid lines -->
+        <g stroke="#334155" stroke-width="0.5" stroke-dasharray="4,6" opacity="0.4">
+          ${[80, 160, 240, 320, 400].map(y=>`<line x1="20" y1="${y}" x2="800" y2="${y}" />`).join('')}
+          ${[140, 260, 380, 500, 620, 740].map(x=>`<line x1="${x}" y1="20" x2="${x}" y2="460" />`).join('')}
+        </g>
+      `;
+
+      // Draw Edges (Roads)
+      edges.forEach(e => {
+        const u = nodes.find(n => n.id === e.u);
+        const v = nodes.find(n => n.id === e.v);
+        if (!u || !v) return;
+
+        const isPathEdge = pathEdgeKeys.has(`${e.u}--${e.v}`);
+        const isRelaxingEdge = stepRelaxedKeys.has(`${e.u}--${e.v}`);
+        const inStepMode = (activeStep !== undefined && activeStep >= 0);
+
+        let strokeColor = '#334155';
+        let strokeWidth = 5;
+        let strokeDash = 'none';
+        let filter = '';
+
+        if (!inStepMode && isPathEdge) {
+          strokeColor = '#10b981';
+          strokeWidth = 7;
+          filter = 'filter="url(#neonGlow)"';
+        } else if (inStepMode) {
+          if (isRelaxingEdge) {
+            strokeColor = '#f59e0b';
+            strokeWidth = 7;
+            strokeDash = '6,4';
+            filter = 'filter="url(#neonGlow)"';
+          } else if (stepVisitedSet.has(e.u) && stepVisitedSet.has(e.v)) {
+            strokeColor = '#64748b';
+            strokeWidth = 5;
+          }
+        }
+
+        const midX = (u.x + v.x) / 2;
+        const midY = (u.y + v.y) / 2;
+
+        h += `
+          <!-- Road background -->
+          <line x1="${u.x}" y1="${u.y}" x2="${v.x}" y2="${v.y}" stroke="#0f172a" stroke-width="9" stroke-linecap="round" />
+          <!-- Road surface -->
+          <line x1="${u.x}" y1="${u.y}" x2="${v.x}" y2="${v.y}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-dasharray="${strokeDash}" ${filter} />
+          <!-- Weight badge -->
+          <g transform="translate(${midX},${midY})">
+            <rect x="-18" y="-10" width="36" height="20" rx="4" fill="#0f172a" stroke="${strokeColor}" stroke-width="1.2" />
+            <text x="0" y="4" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle" font-family="monospace">${e.weight}m</text>
+          </g>
+        `;
+      });
+
+      // Draw Nodes (Campus Buildings)
+      nodes.forEach(n => {
+        const isStart = n.id === res.from;
+        const isDest = n.id === res.to;
+        const isPath = pathSet.has(n.id);
+        const inStepMode = (activeStep !== undefined && activeStep >= 0);
+        const isCurrentStep = (n.id === stepCurrentNode);
+        const isVisitedStep = stepVisitedSet.has(n.id);
+
+        let bldgColor = '#1e293b';
+        let strokeColor = '#475569';
+        let glow = '';
+
+        if (n.category === 'Entrance') bldgColor = '#065f46';
+        else if (n.category === 'Administrative') bldgColor = '#581c87';
+        else if (n.category === 'Academic') bldgColor = '#1e40af';
+        else if (n.category === 'Amenities') bldgColor = '#9a3412';
+        else if (n.category === 'Living') bldgColor = '#881337';
+
+        if (isCurrentStep) {
+          strokeColor = '#f59e0b';
+          glow = 'filter="url(#neonGlow)"';
+        } else if (isStart) {
+          strokeColor = '#10b981';
+          glow = 'filter="url(#neonGlow)"';
+        } else if (isDest) {
+          strokeColor = '#ef4444';
+          glow = 'filter="url(#neonGlow)"';
+        } else if (!inStepMode && isPath) {
+          strokeColor = '#38bdf8';
+        } else if (inStepMode && isVisitedStep) {
+          strokeColor = '#94a3b8';
+        }
+
+        h += `
+          <g class="campus-node" data-id="${esc(n.id)}" style="cursor:pointer" transform="translate(${n.x},${n.y})">
+            <!-- Pulsing rings for Start / Dest / Current -->
+            ${(isStart || isDest || isCurrentStep) ? `<circle r="36" fill="none" stroke="${strokeColor}" stroke-width="2" opacity="0.35"><animate attributeName="r" values="28;42;28" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>` : ''}
+            
+            <!-- Node Card Base -->
+            <rect x="-38" y="-22" width="76" height="44" rx="8" fill="${bldgColor}" stroke="${strokeColor}" stroke-width="${isStart||isDest||isCurrentStep?3:2}" ${glow} />
+            
+            <!-- Category Tag line -->
+            <rect x="-38" y="18" width="76" height="4" rx="2" fill="${strokeColor}" />
+
+            <!-- Icon & Label -->
+            <text x="0" y="-3" font-size="14" text-anchor="middle" dominant-baseline="central">${n.icon}</text>
+            <text x="0" y="11" fill="#f8fafc" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui,sans-serif">${esc(n.label)}</text>
+            
+            <!-- Pin Badge on Start / Dest -->
+            ${isStart ? `<circle cx="-28" cy="-16" r="8" fill="#10b981" /><text x="-28" y="-13" fill="#fff" font-size="9" text-anchor="middle">🚩</text>` : ''}
+            ${isDest ? `<circle cx="28" cy="-16" r="8" fill="#ef4444" /><text x="28" y="-13" fill="#fff" font-size="9" text-anchor="middle">🎯</text>` : ''}
+          </g>
+        `;
+      });
+
+      svg.innerHTML = h;
+
+      // Click to select Start or Destination directly on Map
+      svg.querySelectorAll('.campus-node').forEach(elem => {
+        elem.onclick = (e)=>{
+          const clickedId = elem.getAttribute('data-id');
+          const selF = c.querySelector('#selFrom');
+          const selT = c.querySelector('#selTo');
+          if (selF.value === clickedId) {
+            // Already from, no-op
+          } else if (selT.value === clickedId) {
+            // Swap
+            const tmp = selF.value;
+            selF.value = selT.value;
+            selT.value = tmp;
+            fetchRoute();
+          } else {
+            // Set as destination
+            selT.value = clickedId;
+            fetchRoute();
+          }
+        };
+      });
+    }
+
+    function renderStep(idx){
+      stepIndex = idx;
+      const st = currentData.steps ? currentData.steps[idx] : null;
+      const countElem = c.querySelector('#stepCounter');
+      const expElem = c.querySelector('#stepExplanation');
+      const pqElem = c.querySelector('#pqStateContainer');
+
+      if (!st) {
+        countElem.innerText = 'Showing Final Optimal Route';
+        expElem.innerHTML = `Route finalized: <b>${currentData.from}</b> to <b>${currentData.to}</b> via ${currentData.path.length} waypoints. Total distance: <b>${currentData.total_distance_meters} meters</b>.`;
+        pqElem.innerHTML = '';
+        renderMap(currentData, -1);
+        return;
+      }
+
+      countElem.innerHTML = `Step <b>${st.step}</b> of <b>${currentData.steps.length}</b> (Node: <b>${st.curr}</b>)`;
+      expElem.innerHTML = st.explanation;
+
+      let pqHtml = '<span style="color:var(--mute);font-weight:600">Priority Queue (Min-Heap):</span>';
+      if (!st.pq || st.pq.length === 0) {
+        pqHtml += '<span style="color:var(--mute);font-style:italic">empty</span>';
+      } else {
+        pqHtml += st.pq.map(item => `
+          <span style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;font-family:monospace">
+            ${esc(item.node)}: <b>${item.d}m</b>
+          </span>
+        `).join('');
+      }
+      pqElem.innerHTML = pqHtml;
+
+      renderMap(currentData, idx);
+    }
+
+    async function fetchRoute(){
+      stopPlayback();
+      const f = c.querySelector('#selFrom').value;
+      const t = c.querySelector('#selTo').value;
+      const res = await getJSON('/api/campus_navigator?from='+encodeURIComponent(f)+'&to='+encodeURIComponent(t));
+      currentData = res;
+      updateMetrics(currentData);
+      renderStep(-1);
+    }
+
+    function stopPlayback(){
+      if (timer) { clearInterval(timer); timer = null; }
+      isPlaying = false;
+      const btn = c.querySelector('#btnPlayPause');
+      if (btn) btn.innerHTML = '▶ Play Step-by-Step';
+    }
+
+    function togglePlayback(){
+      if (isPlaying) {
+        stopPlayback();
+      } else {
+        isPlaying = true;
+        const btn = c.querySelector('#btnPlayPause');
+        btn.innerHTML = '⏸ Pause';
+        if (stepIndex >= (currentData.steps ? currentData.steps.length - 1 : 0)) {
+          stepIndex = -1;
+        }
+        timer = setInterval(()=>{
+          if (!currentData.steps || currentData.steps.length === 0) {
+            stopPlayback();
+            return;
+          }
+          let nextIdx = stepIndex + 1;
+          if (nextIdx >= currentData.steps.length) {
+            stopPlayback();
+            renderStep(-1);
+          } else {
+            renderStep(nextIdx);
+          }
+        }, 1200);
+      }
+    }
+
+    // Initial render
+    updateMetrics(currentData);
+    renderStep(-1);
+
+    // Event bindings
+    c.querySelector('#btnRoute').onclick = fetchRoute;
+    c.querySelector('#btnSwap').onclick = ()=>{
+      const selF = c.querySelector('#selFrom');
+      const selT = c.querySelector('#selTo');
+      const tmp = selF.value;
+      selF.value = selT.value;
+      selT.value = tmp;
+      fetchRoute();
+    };
+
+    c.querySelector('#btnPlayPause').onclick = togglePlayback;
+    c.querySelector('#btnStepNext').onclick = ()=>{
+      stopPlayback();
+      if (!currentData.steps) return;
+      if (stepIndex < currentData.steps.length - 1) renderStep(stepIndex + 1);
+      else renderStep(-1);
+    };
+    c.querySelector('#btnStepPrev').onclick = ()=>{
+      stopPlayback();
+      if (!currentData.steps) return;
+      if (stepIndex > 0) renderStep(stepIndex - 1);
+      else if (stepIndex === -1) renderStep(currentData.steps.length - 1);
+      else renderStep(0);
+    };
+    c.querySelector('#btnStepReset').onclick = ()=>{
+      stopPlayback();
+      renderStep(-1);
+    };
+
+    // Preset route buttons
+    c.querySelector('#preGateCC').onclick = ()=>{
+      c.querySelector('#selFrom').value = 'Main Gate';
+      c.querySelector('#selTo').value = 'Computer Center';
+      fetchRoute();
+    };
+    c.querySelector('#preH1AcadA').onclick = ()=>{
+      c.querySelector('#selFrom').value = 'Hostel 1';
+      c.querySelector('#selTo').value = 'Academic Block A';
+      fetchRoute();
+    };
+    c.querySelector('#preSportLib').onclick = ()=>{
+      c.querySelector('#selFrom').value = 'Sports Complex';
+      c.querySelector('#selTo').value = 'Library';
+      fetchRoute();
+    };
+    c.querySelector('#preCafeH2').onclick = ()=>{
+      c.querySelector('#selFrom').value = 'Cafeteria';
+      c.querySelector('#selTo').value = 'Hostel 2';
+      fetchRoute();
+    };
+  }
+
+  // 2. Course Prereq Checker
+  async function showPre(){
+    setTab(1);
+    const data = await getJSON('/api/course_prereq?course=CS401');
+    c.innerHTML = `<h3>Course Prerequisite Checker (DAG & Topological Sort)</h3>
+    <p>Determines valid course progression orders and verifies acyclic dependencies.</p>
+    <div class="row">
+      <select id="selCourse" class="in">${data.all_courses.map(co=>`<option value="${esc(co.code)}" ${co.code===data.target?'selected':''}>${esc(co.code)}: ${esc(co.name)}</option>`).join('')}</select>
+      <button class="btn" id="btnCheckPre">Check Prereqs</button>
+    </div>
+    <div id="preResult" style="margin-top:16px"></div>`;
+    function renderSeq(res){
+      root.querySelector('#preResult').innerHTML = `
+        <div class="note"><b>Status:</b> ${res.has_cycle ? 'Cycle detected in requirements!' : 'Valid Directed Acyclic Graph (DAG)'}</div>
+        <div class="cells" style="margin-top:12px">
+          ${res.required_sequence.map((step, i)=>`<div class="cell on"><small>Step ${i+1}</small><b>${esc(step.code)}</b><small>${esc(step.name)}</small></div>`).join('')}
+        </div>`;
+    }
+    renderSeq(data);
+    root.querySelector('#btnCheckPre').onclick = async()=>{
+      const co = root.querySelector('#selCourse').value;
+      const res = await getJSON('/api/course_prereq?course='+encodeURIComponent(co));
+      renderSeq(res);
+    };
+  }
+
+  // 3. Autocomplete
+  async function showAuto(){
+    setTab(2);
+    c.innerHTML = `<h3>Autocomplete (Trie Prefix Tree)</h3>
+    <p>Fast dictionary prefix search with frequency-weighted ranking.</p>
+    <div class="row">
+      <input type="text" class="in" id="txtPrefix" placeholder="Type letters (e.g. al, bi, tr, re)..." value="bi">
+    </div>
+    <div id="autoResult" style="margin-top:16px"></div>`;
+    async function updateAuto(){
+      const q = root.querySelector('#txtPrefix').value;
+      const res = await getJSON('/api/autocomplete?q='+encodeURIComponent(q));
+      root.querySelector('#autoResult').innerHTML = `
+        <div class="cells">
+          ${res.suggestions.length ? res.suggestions.map(s=>`<div class="cell on"><b>${esc(s.word)}</b><small>Rank: ${s.frequency}</small></div>`).join('') : '<div class="note">No matching prefixes found in Trie.</div>'}
+        </div>`;
+    }
+    updateAuto();
+    root.querySelector('#txtPrefix').oninput = updateAuto;
+  }
+
+  // 4. Task Scheduler
+  async function showSched(){
+    setTab(3);
+    async function loadTasks(act, name, prio){
+      let u = '/api/task_scheduler?action='+(act||'view');
+      if(name) u += '&name='+encodeURIComponent(name)+'&priority='+(prio||5);
+      const res = await getJSON(u);
+      c.innerHTML = `<h3>Task Scheduler (Priority Queue / Max-Heap)</h3>
+      <p>Highest-priority burst tasks dispatched first.</p>
+      <div class="row">
+        <input type="text" class="in" id="taskName" placeholder="New task title...">
+        <input type="number" class="in" id="taskPrio" placeholder="Priority (1-10)" min="1" max="10" value="7" style="max-width:140px">
+        <button class="btn" id="btnAddTask">Add Task</button>
+        <button class="btn alt" id="btnExecTask">Execute Next (Pop Heap)</button>
+      </div>
+      <div style="margin-top:16px">
+        <div class="note"><b>Next In Line (Root of Heap):</b> ${esc(res.next_to_execute.title)} (Priority: ${res.next_to_execute.priority}, ${res.next_to_execute.burst_ms}ms)</div>
+        <table class="v" style="margin-top:12px">
+          <thead><tr style="text-align:left;color:var(--mute)"><th>ID</th><th>Task Title</th><th>Priority</th><th>Burst Time</th></tr></thead>
+          <tbody>${res.queue.map(t=>`<tr><td>#${t.id}</td><td><b>${esc(t.title)}</b></td><td><span class="badge">${t.priority}</span></td><td>${t.burst_ms}ms</td></tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+      root.querySelector('#btnAddTask').onclick = ()=>{
+        const n = root.querySelector('#taskName').value, p = root.querySelector('#taskPrio').value;
+        if(n) loadTasks('add', n, p);
+      };
+      root.querySelector('#btnExecTask').onclick = ()=>loadTasks('execute');
+    }
+    loadTasks();
+  }
+
+  tabs[0].onclick = showNav;
+  tabs[1].onclick = showPre;
+  tabs[2].onclick = showAuto;
+  tabs[3].onclick = showSched;
+  showNav();
+}
+
+/* BENCHMARK RUNNER & PROGRESS STORE */
+async function renderBenchmark(root){
+  root.innerHTML=`<h1>BenchmarkRunner & ProgressStore</h1>
+  <p class="lead">Measure live execution times against Big-O bounds and inspect the hand-rolled flat-file progress tracker.</p>
+  <div class="panel">
+    <h3>Live Structure Benchmark</h3>
+    <div class="row">
+      <select id="bmStruct" class="in">
+        <option value="">All Structures</option>
+        <option value="vector">Vector / Array (Contiguous)</option>
+        <option value="linked_list">Linked List (Pointer Nodes)</option>
+        <option value="bst">Binary Search Tree (Branching)</option>
+      </select>
+      <input type="number" id="bmN" class="in" value="20000" min="1000" max="100000" step="5000" style="max-width:160px">
+      <button class="btn" id="btnRunBM">Run Benchmark</button>
+    </div>
+    <div id="bmOutput" style="margin-top:16px"></div>
+  </div>
+  <div class="panel" style="margin-top:22px">
+    <h3>ProgressStore (Hand-Rolled Flat-File Format)</h3>
+    <p>Persists learner status in <code>progress.dat</code> without JSON or third-party serialization libraries.</p>
+    <div class="row">
+      <input type="text" id="progTopic" class="in" placeholder="Topic name (e.g. Binary Search)" value="Classes and Objects">
+      <select id="progStatus" class="in" style="max-width:180px">
+        <option value="completed">Completed</option>
+        <option value="in_progress">In Progress</option>
+        <option value="started">Started</option>
+      </select>
+      <input type="number" id="progScore" class="in" value="95" min="0" max="100" style="max-width:120px">
+      <button class="btn" id="btnSaveProg">Save Record</button>
+    </div>
+    <div id="progOutput" style="margin-top:16px"></div>
+  </div>`;
+  root.appendChild(backBtn('Back to semesters','semester'));
+
+  async function runBM(){
+    const s = root.querySelector('#bmStruct').value, n = root.querySelector('#bmN').value;
+    root.querySelector('#bmOutput').innerHTML = '<div class="status">Running microbenchmarks with high_resolution_clock…</div>';
+    const res = await getJSON('/api/benchmark?struct='+encodeURIComponent(s)+'&n='+(n||10000));
+    root.querySelector('#bmOutput').innerHTML = `
+      <table class="v">
+        <thead><tr style="text-align:left;color:var(--mute)"><th>Operation</th><th>Theoretical Complexity</th><th>Data Size</th><th>Measured Time</th><th>Observations</th></tr></thead>
+        <tbody>
+          ${res.results.map(r=>`<tr><td><b>${esc(r.operation)}</b></td><td><code>${esc(r.complexity)}</code></td><td>${r.size.toLocaleString()}</td><td><b style="color:var(--accent)">${r.measured_us.toFixed(1)} µs</b></td><td><small>${esc(r.note)}</small></td></tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+  root.querySelector('#btnRunBM').onclick = runBM;
+  runBM();
+
+  async function loadProg(){
+    const res = await getJSON('/api/progress');
+    root.querySelector('#progOutput').innerHTML = `
+      <div class="note"><b>Storage Format:</b> <code>${esc(res.format)}</code> · <b>Total Saved:</b> ${res.total_records}</div>
+      <table class="v" style="margin-top:12px">
+        <thead><tr style="text-align:left;color:var(--mute)"><th>Topic</th><th>Status</th><th>Score</th><th>Last Updated</th></tr></thead>
+        <tbody>
+          ${res.records.length ? res.records.map(r=>`<tr><td><b>${esc(r.topic)}</b></td><td><span class="badge">${esc(r.status)}</span></td><td>${r.score}%</td><td>${new Date(r.timestamp*1000).toLocaleString()}</td></tr>`).join('') : '<tr><td colspan="4">No progress saved yet. Use the form above to record progress!</td></tr>'}
+        </tbody>
+      </table>`;
+  }
+  root.querySelector('#btnSaveProg').onclick = async()=>{
+    const t = root.querySelector('#progTopic').value, st = root.querySelector('#progStatus').value, sc = root.querySelector('#progScore').value;
+    await getJSON('/api/progress?action=save&topic='+encodeURIComponent(t)+'&status='+encodeURIComponent(st)+'&score='+(sc||0));
+    loadProg();
+  };
+  loadProg();
+}
+
+/* WINDOW 4: choose program -> enter value -> step-by-step simulation -> reference and practice */
+const loadSim=(inp,opt)=>getJSON('/api/simulate?topic='+encodeURIComponent(state.topic)+'&opt='+(opt||0)+'&input='+encodeURIComponent(inp));
+async function loadRL(root,isSim){
+  try{
+    const r=await fetch('/api/reallife?topic='+encodeURIComponent(state.topic)); const j=await r.json(); const box=root.querySelector('#rl'); if(!box||!j.available) return;
+    const lis=j.uses.map(u=>`<li>${esc(u)}</li>`).join('');
+    let demo='';
+    if(isSim&&j.demo>0){ demo=state.opt===j.demo?`<div class="note">You are watching the real-life simulation. <button class="btn alt" id="rlback">Back to the main simulation</button></div>`:`<div class="row" style="margin-top:8px"><button class="btn" id="rlgo">Try it as a simulation →</button></div>`; }
+    box.innerHTML=`<div class="panel refs"><h3>Where it is used in real life</h3><ul>${lis}</ul>${demo}</div>`;
+    const go=box.querySelector('#rlgo'); if(go) go.onclick=()=>{state.opt=j.demo; renderSim(root); window.scrollTo(0,0);};
+    const bk=box.querySelector('#rlback'); if(bk) bk.onclick=()=>{state.opt=0; renderSim(root);};
+  }catch(e){}
+}
+
+async function renderSim(root){
+  root.innerHTML=`<h1>${esc(state.topic)}</h1><div class="status">Loading…</div>`;
+  const m=await loadSim('',state.opt);
+  if(!m.available){
+    const ph=await loadPhys(null);
+    if(ph.available){ renderPhysics(root,ph); return; }
+    root.innerHTML=`<h1>${esc(state.topic)}</h1><div class="status">The simulation for this topic has not been added yet.</div>`;
+    root.appendChild(backBtn('Back to topics','topic')); return;
+  }
+  const sdlc=state.topic.startsWith('Software Development Life');
+  const progs=m.programs.length>1?`<div class="panel"><h3>${sdlc?'Choose a life cycle model':'Choose a program'}</h3><div class="row" id="progs">${m.programs.map((p,k)=>`<label class="opt"><input type="radio" name="prog" value="${k}"${k===state.opt?' checked':''}> ${esc(p)}</label>`).join('')}</div></div>`:'';
+  const pre=m.presets.length?`<div class="chips" id="pre" style="margin-top:10px"><span class="num">${sdlc?'Pick a project:':'Quick picks:'}</span>${m.presets.map(p=>`<button class="chip" type="button">${esc(p)}</button>`).join('')}</div>`:'';
+  root.innerHTML=`<h1>${esc(state.topic)}</h1>${progs}
+  <div class="panel"><h3>${m.programs.length>1?'Step 2':'Step 1'} · Enter your value</h3>
+    <label for="inp" class="lead" style="display:block;margin-bottom:8px">${esc(m.label)}</label>
+    <div class="row"><input class="in" id="inp" value="${esc(m.default)}">
+    <button class="btn" id="run">Run simulation</button><button class="btn alt" id="def">Use default</button></div>${pre}</div>
+  <div id="sim"></div><div id="rl"></div>`; loadRL(root,true);
+  const inp=root.querySelector('#inp');
+  const start=async v=>{ const d=await loadSim(v,state.opt); const box=root.querySelector('#sim'); if(box&&box.isConnected) show(d, box); };
+  root.querySelectorAll('input[name=prog]').forEach(r=>r.onchange=()=>{state.opt=+r.value; renderSim(root);});
+  root.querySelectorAll('#pre .chip').forEach(c=>c.onclick=()=>{inp.value=c.textContent; start(inp.value);});
+  root.querySelector('#run').onclick=()=>start(inp.value);
+  root.querySelector('#def').onclick=()=>{inp.value=m.default; start(m.default);};
+  root.appendChild(backBtn('Back to topics','topic'));
+}
+
+/* real flowchart shapes drawn as SVG */
+const FDIM=t=>t==='d'?[150,70]:t==='s'?[110,36]:[130,40];
+function fshape(n,on){
+  const [t,x,y,txt]=n,[w,h]=FDIM(t),c=on?' on':'';
+  let sh;
+  if(t==='s') sh=`<rect class="nd${c}" x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="${h/2}"/>`;
+  else if(t==='p') sh=`<rect class="nd${c}" x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}"/>`;
+  else if(t==='i') sh=`<polygon class="nd${c}" points="${x-w/2+14},${y-h/2} ${x+w/2},${y-h/2} ${x+w/2-14},${y+h/2} ${x-w/2},${y+h/2}"/>`;
+  else sh=`<polygon class="nd${c}" points="${x},${y-h/2} ${x+w/2},${y} ${x},${y+h/2} ${x-w/2},${y}"/>`;
+  return sh+`<text x="${x}" y="${y}">${esc(txt)}</text>`;
+}
+function flowSVG(f,cur){
+  const pt=(n,sd)=>{const [,x,y]=n,[w,h]=FDIM(n[0]);return sd==='t'?[x,y-h/2]:sd==='b'?[x,y+h/2]:sd==='l'?[x-w/2,y]:[x+w/2,y];};
+  let o=`<svg class="flow" viewBox="0 0 ${f.w} ${f.h}" role="img" aria-label="Flowchart"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>`;
+  f.e.forEach(([a,sa,b,sb,lb])=>{
+    const p0=pt(f.n[a],sa),p1=pt(f.n[b],sb),P=[p0],V=s=>s==='t'||s==='b';
+    if(sa==='b'&&sb==='t'){ if(p0[0]!==p1[0]){const my=(p0[1]+p1[1])/2;P.push([p0[0],my],[p1[0],my]);} }
+    else if(sa===sb&&!V(sa)){const X=sa==='l'?Math.min(p0[0],p1[0])-30:Math.max(p0[0],p1[0])+30;P.push([X,p0[1]],[X,p1[1]]);}
+    else if(!V(sa)&&V(sb)) P.push([p1[0],p0[1]]);
+    else if(V(sa)&&!V(sb)) P.push([p0[0],p1[1]]);
+    P.push(p1);
+    o+=`<polyline class="eg" points="${P.map(q=>q.join(',')).join(' ')}" marker-end="url(#ar)"/>`;
+    if(lb) o+=`<text class="lb" x="${p0[0]+(sa==='b'?14:sa==='l'?-18:18)}" y="${p0[1]+(sa==='b'?14:-9)}">${esc(lb)}</text>`;
+  });
+  f.n.forEach((n,i)=>o+=fshape(n,i===cur));
+  return o+'</svg>';
+}
+const LEGEND=`<svg class="flow legend" viewBox="0 0 590 84" role="img" aria-label="Flowchart symbols">${[['s',60,'Start / End'],['i',200,'Input / Output'],['p',345,'Process'],['d',500,'Decision']].map(([t,x,l])=>fshape([t,x,42,l],false)).join('')}</svg>`;
+
+/* circuit diagrams (SVG) */
+function cirPart(e,on){
+  const [t,id,x,y,o,lab,side,dir]=e; const c='cp'+(on.includes(id)?' on':'');
+  const L=(a,b,c2,d)=>`<line x1="${a}" y1="${b}" x2="${c2}" y2="${d}"/>`;
+  let body='',lbl='';
+  const lab2=(ax,ay,an)=>lab?`<text x="${ax}" y="${ay}" text-anchor="${an}" dominant-baseline="central">${esc(lab)}</text>`:'';
+  if(t==='OA'){
+    const top=dir===1?'−':'+',bot=dir===1?'+':'−';
+    return `<g class="${c}"><polygon points="${x-40},${y-40} ${x-40},${y+40} ${x+40},${y}"/><text x="${x-34}" y="${y-20}" dominant-baseline="central">${top}</text><text x="${x-34}" y="${y+20}" dominant-baseline="central">${bot}</text></g>`;
+  }
+  if(t==='Q'||t==='M'){
+    if(t==='Q') body=`<circle cx="${x+8}" cy="${y}" r="28"/>`+L(x-30,y,x,y)+L(x,y-16,x,y+16)+`<polyline points="${x},${y-8} ${x+14},${y-20} ${x+14},${y-30}"/><polyline points="${x},${y+8} ${x+14},${y+20} ${x+14},${y+30}"/><polygon class="ar" points="${x+11},${y+17.5} ${x+2.6},${y+15} ${x+7.2},${y+9.6}"/>`;
+    else body=L(x-30,y,x-6,y)+L(x-6,y-14,x-6,y+14)+L(x,y-16,x,y-8)+L(x,y-4,x,y+4)+L(x,y+8,x,y+16)+`<polyline points="${x},${y-12} ${x+14},${y-12} ${x+14},${y-30}"/><polyline points="${x},${y+12} ${x+14},${y+12} ${x+14},${y+30}"/><polygon class="ar" points="${x},${y} ${x+6},${y-3} ${x+6},${y+3}"/>`+L(x,y,x+14,y);
+    return `<g class="${c}">${body}<text x="${x+40}" y="${y}" dominant-baseline="central">${t==='Q'?'NPN':'NMOS'}</text></g>`;
+  }
+  const s=dir<0?-1:1;
+  if(t==='R') body=`<polyline points="-30,0 -20,0 -15,-8 -5,8 5,-8 15,8 20,0 30,0"/>`;
+  else if(t==='V'||t==='A'){
+    const pl=`<line x1="-11" y1="0" x2="-5" y2="0"/><line x1="-8" y1="-3" x2="-8" y2="3"/><line x1="5" y1="0" x2="11" y2="0"/>`;
+    body=`<line x1="-30" y1="0" x2="-14" y2="0"/><line x1="14" y1="0" x2="30" y2="0"/><circle class="cf" cx="0" cy="0" r="14"/>`+(t==='A'?`<path d="M-8 0 Q-4 -9 0 0 T8 0"/>`:pl);
+    if(s<0) body=`<g transform="scale(-1,1)">${body}</g>`;
+  }
+  else if(t==='I') body=`<line x1="-30" y1="0" x2="-14" y2="0"/><line x1="14" y1="0" x2="30" y2="0"/><circle class="cf" cx="0" cy="0" r="14"/><line x1="-7" y1="0" x2="5" y2="0"/><polygon class="ar" points="8,0 2,-3.5 2,3.5"/>`;
+  else if(t==='C') body=`<line x1="-30" y1="0" x2="-4" y2="0"/><line x1="4" y1="0" x2="30" y2="0"/><line x1="-4" y1="-12" x2="-4" y2="12"/><line x1="4" y1="-12" x2="4" y2="12"/>`;
+  else if(t==='D'||t==='Z'){
+    body=`<line x1="-30" y1="0" x2="-8" y2="0"/><line x1="8" y1="0" x2="30" y2="0"/><polygon points="-8,-10 -8,10 8,0"/>`+(t==='Z'?`<polyline points="5,-10 8,-10 8,10 11,10"/>`:`<line x1="8" y1="-10" x2="8" y2="10"/>`);
+    if(s<0) body=`<g transform="scale(-1,1)">${body}</g>`;
+  }
+  const rot=o==='v'?` rotate(90)`:'';
+  if(o==='h') lbl=lab2(x,y-20,'middle'); else lbl=side==='l'?lab2(x-22,y,'end'):lab2(x+22,y,'start');
+  return `<g class="${c}"><g transform="translate(${x},${y})${rot}">${body}</g>${lbl}</g>`;
+}
+function cirSVG(sp,hl){
+  let o=`<svg class="flow cir${sp.ws?' ws':''}${hl.length?' hl':''}" viewBox="0 0 ${sp.w} ${sp.h}" role="img" aria-label="Circuit diagram"><defs><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  sp.el.forEach(e=>{const t=e[0];
+    if(t==='W'){const on=hl.includes(e[1]);o+=(on?`<polyline class="cw cwh" points="${e[2].join(' ')}"/>`:'')+`<polyline class="cw${on?' on':''}" points="${e[2].join(' ')}"/>`;}
+    else if(t==='N') o+=`<circle class="cn" cx="${e[1]}" cy="${e[2]}" r="3.6"/>`;
+    else if(t==='G'){const[,x,y]=e;o+=`<g class="cp"><line x1="${x}" y1="${y}" x2="${x}" y2="${y+8}"/><line x1="${x-12}" y1="${y+8}" x2="${x+12}" y2="${y+8}"/><line x1="${x-8}" y1="${y+13}" x2="${x+8}" y2="${y+13}"/><line x1="${x-4}" y1="${y+18}" x2="${x+4}" y2="${y+18}"/></g>`;}
+    else if(t==='T') o+=`<text class="ct${e[4]==='mlight'?' lt':''}" x="${e[1]}" y="${e[2]}" text-anchor="${e[4]==='mlight'?'middle':e[4]}" dominant-baseline="central">${esc(e[3])}</text>`;
+    else if(t==='P'){o+=`<polygon class="cb ${e[3]}${hl.includes(e[1])?' on':''}" points="${e[2].join(' ')}"/>`;}
+    else if(t==='K'){o+=`<circle class="cb ${e[5]}${hl.includes(e[1])?' on':''}" cx="${e[2]}" cy="${e[3]}" r="${e[4]}"/>`;}
+    else if(t==='F'){const on=hl.includes(e[1]);o+=`<polyline class="cw${on?' on':''}" style="stroke-dasharray:7 5;${on?'animation:none':''}" points="${e[2].join(' ')}"/>`;}
+    else if(t==='B'){const[,id,x,y,w,h,tx,cl]=e;o+=`<rect class="cb ${cl}${hl.includes(id)?' on':''}" x="${x}" y="${y}" width="${w}" height="${h}"/>`+(tx?`<text class="ct" x="${x+w/2}" y="${y+h/2-14}" text-anchor="middle">${esc(tx)}</text>`:'');}
+    else o+=cirPart(e,hl);
+  });
+  return o+'</svg>';
+}
+
+function show(m,box){
+  let i=0; const n=m.steps.length;
+  box.innerHTML=`<div class="panel"><h3>Watch it run</h3>${m.flow?`<div id="flowbox" style="margin-bottom:14px"><div class="num" style="margin-bottom:4px">Flowchart symbols</div>${LEGEND}</div>`:''}<div class="stage">
+    ${m.flow?'<div id="flowsvg"></div>':''}${(m.diagram||m.steps.some(s=>s.dg))?'<div id="cirsvg"></div>':''}<pre class="code" id="code"></pre><div><div id="matbox"></div><div class="cells" id="cells"></div><div class="stack" id="stk"></div><table class="v" id="vars"></table></div></div>
+    <div class="note" id="note" aria-live="polite"></div>
+    <div class="ctl"><button class="btn alt" id="prev">← Previous</button><button class="btn" id="next">Next →</button><span id="ctr"></span></div></div>
+  <div class="panel refs"><h3>Study and practice</h3><b>Reference material</b><ul>${m.refs.map(r=>{const[a,b]=r.split('|');return `<li><a href="${esc(b)}" target="_blank" rel="noopener">${esc(a)}</a></li>`}).join('')}</ul>
+    <b>Practice questions</b><ul>${m.practice.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`;
+  const $=id=>box.querySelector('#'+id);
+  function draw(){
+    const st=m.steps[i];
+    if(m.flow) $('flowsvg').innerHTML=flowSVG(m.flow,st.node);
+    if(st.dg) $('cirsvg').innerHTML=cirSVG(st.dg,st.hl||[]);
+    else if(m.diagram) $('cirsvg').innerHTML=cirSVG(m.diagram,(st.hl&&st.hl.length)?st.hl:(m.diagram.map[st.line]||[]));
+    $('code').innerHTML=m.code.map((c,k)=>`<span class="ln${k===st.line?' on':''}">${esc(c)}</span>`).join('');
+    $('cells').innerHTML=st.arr.map((x,k)=>{const lab=st.cols?`${st.nm}[${Math.floor(k/st.cols)}][${k%st.cols}]`:`${st.nm}[${k}]`;
+      const val=x===-2147483648?'?':(st.chr?(x===0?'\\0':String.fromCharCode(x)):x);
+      return (st.cols&&k&&k%st.cols===0?'<div style="flex-basis:100%"></div>':'')+`<div class="cell${k===st.hi?' on':''}${st.rl>=0&&(k<st.rl||k>st.rh)?' out':''}"><small>${lab}</small>${esc(val)}<em>${esc((st.tags&&st.tags[k])||'')}</em></div>`}).join('');
+    $('matbox').innerHTML=st.mat&&st.mat.length?'<table class="mat">'+Array.from({length:st.mat.length/st.mc},(_,i)=>'<tr>'+st.mat.slice(i*st.mc,(i+1)*st.mc).map((x,j)=>`<td class="${i*st.mc+j===st.hi?'on':''}${st.cols&&j===st.cols?' sep':''}">${esc(x)}</td>`).join('')+'</tr>').join('')+'</table>':'';
+    $('stk').innerHTML=st.stack.length?'<small>Call stack (top first)</small>'+st.stack.slice().reverse().map(x=>`<div>${esc(x)}</div>`).join('')+'<br>':'';
+    $('vars').innerHTML=st.vars.map(v=>`<tr><td>${esc(v[0])}</td><td>${esc(v[1])}</td></tr>`).join('');
+    $('note').textContent=st.note; $('ctr').textContent=`Step ${i+1} of ${n}`;
+    $('prev').disabled=i===0; $('next').disabled=i===n-1;
+  }
+  $('prev').onclick=()=>{i--;draw();}; $('next').onclick=()=>{i++;draw();};
+  draw(); box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ====== interactive physics windows ====== */
+const loadPhys=vals=>getJSON('/api/physics?topic='+encodeURIComponent(state.topic)+(vals?'&p='+vals.map(v=>(+v).toFixed(6)).join(','):''));
+const PCOL=['var(--accent)','var(--accent2)','#7c3aed','#dc2626','#0891b2','#65a30d'];
+function wl2rgb(w){let r=0,g=0,b=0;
+  if(w>=380&&w<440){r=-(w-440)/60;b=1}else if(w<490){g=(w-440)/50;b=1}else if(w<510){g=1;b=-(w-510)/20}else if(w<580){r=(w-510)/70;g=1}else if(w<645){r=1;g=-(w-645)/65}else if(w<=780){r=1}
+  let f=w<420?0.3+0.7*(w-380)/40:w>700?0.3+0.7*(780-w)/80:1; if(w<380||w>780){f=0.5;r=g=b=1}
+  return [r,g,b].map(c=>Math.round(255*Math.pow(c*f,0.8)));}
+function niceTicks(a,b,n){const sp=(b-a)||1,st0=sp/n,mg=Math.pow(10,Math.floor(Math.log10(st0))),nm=st0/mg,st=(nm<1.5?1:nm<3?2:nm<7?5:10)*mg,t=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+st*1e-9;v+=st)t.push(+v.toPrecision(12));return t;}
+const fmtN=v=>{if(v===0)return '0';const a=Math.abs(v);if(a>=1e5||a<1e-3)return v.toExponential(1).replace('e+','e');return String(+v.toPrecision(3));};
+function heatCol(t){t=Math.max(0,Math.min(1,t));const st=[[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]],x=t*4,i=Math.min(3,Math.floor(x)),f=x-i,a=st[i],b=st[i+1];return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;}
+function plotSVG(pl,idx){
+  const W=560,H=pl.equal?440:300,ml=62,mr=26,mt=34,mb=48,pw=W-ml-mr,ph=H-mt-mb; let xs=[],ys=[];
+  pl.series.forEach(s=>s.x.forEach((v,i)=>{if(v!==null&&s.y[i]!==null){xs.push(v);ys.push(s.y[i]);}}));
+  let x0=pl.xmin??Math.min(...xs),x1=pl.xmax??Math.max(...xs),y0=pl.ymin??Math.min(...ys),y1=pl.ymax??Math.max(...ys);
+  if(!isFinite(x0)){x0=0;x1=1}if(!isFinite(y0)){y0=0;y1=1}
+  if(x1-x0<1e-12){x0-=1;x1+=1}
+  if(y1-y0<1e-12){y0-=1;y1+=1}
+  if(pl.ymin==null){const pad=(y1-y0)*0.06;y0-=pad} if(pl.ymax==null){const pad=(y1-y0)*0.08;y1+=pad}
+  if(pl.equal){const sc=Math.min(pw/(x1-x0),ph/(y1-y0)),xr=pw/sc,yr=ph/sc,cx=(x0+x1)/2,cy=(y0+y1)/2;x0=cx-xr/2;x1=cx+xr/2;y0=cy-yr/2;y1=cy+yr/2;}
+  const X=v=>ml+(v-x0)/(x1-x0)*pw,Y=v=>mt+ph-(v-y0)/(y1-y0)*ph,id='pc'+idx;
+  let o=`<svg class="plot" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(pl.title)}"><defs><clipPath id="${id}"><rect x="${ml}" y="${mt}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+  o+=`<text class="tt" x="${ml}" y="18">${esc(pl.title)}</text>`;
+  const hasY=!(pl.spec&&!pl.yl)&&pl.yl!==''||pl.series.length>0&&pl.yl!=='';
+  if(!pl.equal||true){niceTicks(x0,x1,6).forEach(t=>{const px=X(t);o+=`<line class="gr" x1="${px}" y1="${mt}" x2="${px}" y2="${mt+ph}"/><text class="tx" x="${px}" y="${mt+ph+15}" text-anchor="middle">${fmtN(t)}</text>`;});
+    if(pl.yl!==''||pl.equal)niceTicks(y0,y1,5).forEach(t=>{const py=Y(t);o+=`<line class="gr" x1="${ml}" y1="${py}" x2="${ml+pw}" y2="${py}"/><text class="tx" x="${ml-6}" y="${py+4}" text-anchor="end">${fmtN(t)}</text>`;});}
+  o+=`<rect x="${ml}" y="${mt}" width="${pw}" height="${ph}" fill="none" class="ax"/>`;
+  if(pl.xl)o+=`<text class="tx" x="${ml+pw/2}" y="${H-8}" text-anchor="middle">${esc(pl.xl)}</text>`;
+  if(pl.yl)o+=`<text class="tx" transform="translate(14,${mt+ph/2}) rotate(-90)" text-anchor="middle">${esc(pl.yl)}</text>`;
+  o+=`<g clip-path="url(#${id})">`;
+  if(pl.heat){const n=pl.heat.n,v=pl.heat.v.filter(z=>z!==null);let lo=Math.min(...v),hi=Math.max(...v);if(hi-lo<1e-12)hi=lo+1;const hx0=pl.xmin,hx1=pl.xmax,hy0=pl.ymin,hy1=pl.ymax,dx=(hx1-hx0)/n,dy=(hy1-hy0)/n;
+    pl.heat.v.forEach((z,i)=>{if(z===null)return;const ix=i%n,iy=Math.floor(i/n),xa=X(hx0+ix*dx),xb=X(hx0+(ix+1)*dx),ya=Y(hy0+iy*dy),yb=Y(hy0+(iy+1)*dy);o+=`<rect x="${xa.toFixed(1)}" y="${yb.toFixed(1)}" width="${(xb-xa+0.7).toFixed(1)}" height="${(ya-yb+0.7).toFixed(1)}" fill="${heatCol((z-lo)/(hi-lo))}"/>`;});}
+  if(pl.arrows&&pl.arrows.length){pl.arrows.forEach(a=>{const x1=X(a[0]),y1=Y(a[1]),x2=X(a[0]+a[2]),y2=Y(a[1]+a[3]),L=Math.hypot(x2-x1,y2-y1);if(L<1.5)return;const ux=(x2-x1)/L,uy=(y2-y1)/L,hs=Math.min(6,L*0.5);
+    o+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}M${x2.toFixed(1)} ${y2.toFixed(1)}L${(x2-ux*hs-uy*hs*0.5).toFixed(1)} ${(y2-uy*hs+ux*hs*0.5).toFixed(1)}M${x2.toFixed(1)} ${y2.toFixed(1)}L${(x2-ux*hs+uy*hs*0.5).toFixed(1)} ${(y2-uy*hs-ux*hs*0.5).toFixed(1)}" style="stroke:${pl.heat?'#fff':'var(--mute)'};stroke-width:1.3;fill:none;${pl.heat?'opacity:.9':''}"/>`;});}
+  pl.marks.forEach(m=>{if(m.x>=x0&&m.x<=x1){const c=pl.spec?`rgb(${wl2rgb(m.x).join(',')})`:null;o+=`<line class="mk" ${c?`style="stroke:${c};stroke-dasharray:none;stroke-width:2.4"`:''} x1="${X(m.x)}" y1="${mt}" x2="${X(m.x)}" y2="${mt+ph}"/>`;}});
+  pl.series.forEach((s,k)=>{const grid=s.name==='~'||s.name==='+',col=s.name==='~'?'var(--line)':(s.name==='+'?'var(--accent)':PCOL[k%PCOL.length]);let d='',pen=false;
+    s.x.forEach((v,i)=>{const w=s.y[i];if(v===null||w===null){pen=false;return;}d+=(pen?'L':'M')+X(v).toFixed(1)+' '+Y(w).toFixed(1);pen=true;});
+    if(s.dots){s.x.forEach((v,i)=>{if(v!==null&&s.y[i]!==null)o+=`<circle cx="${X(v).toFixed(1)}" cy="${Y(s.y[i]).toFixed(1)}" r="3.6" fill="${col}" fill-opacity=".72" stroke="#fff" stroke-width=".6"/>`;});}
+    else if(s.x.length===1)o+=`<circle cx="${X(s.x[0])}" cy="${Y(s.y[0])}" r="6" fill="${col}"/>`;
+    else{ if(s.arrow&&s.x.length>=2){const n2=s.x.length,xa=X(s.x[n2-2]),ya=Y(s.y[n2-2]),xb=X(s.x[n2-1]),yb=Y(s.y[n2-1]),L=Math.hypot(xb-xa,yb-ya)||1,ux=(xb-xa)/L,uy=(yb-ya)/L,h=Math.min(11,L*0.45);o+=`<polygon points="${xb.toFixed(1)},${yb.toFixed(1)} ${(xb-ux*h-uy*h*0.45).toFixed(1)},${(yb-uy*h+ux*h*0.45).toFixed(1)} ${(xb-ux*h+uy*h*0.45).toFixed(1)},${(yb-uy*h-ux*h*0.45).toFixed(1)}" fill="${col}"/>`;}
+    o+=`<path class="ln" d="${d}${s.fill?'Z':''}" style="stroke:${col}${s.dash?';stroke-dasharray:6 5':''}${grid?';stroke-width:1.2':''}${s.fill?`;fill:${col};fill-opacity:.22`:''}"/>`;}});
+  o+='</g>';
+  pl.marks.forEach((m,mi)=>{if(m.label&&m.x>=x0&&m.x<=x1)o+=`<text class="ml" x="${Math.min(X(m.x)+4,ml+pw-4)}" y="${mt+13+(pl.spec?(mi%4)*13:0)}" ${X(m.x)>ml+pw-70?'text-anchor="end"':''}>${esc(m.label)}</text>`;});
+  pl.series.forEach((s,k)=>{if(!s.label||!s.name)return;const i=s.x.length-1;if(i<0||s.x[i]===null||s.y[i]===null)return;const px=Math.min(X(s.x[i]),ml+pw-4),py=Math.max(mt+12,Math.min(mt+ph-4,Y(s.y[i])-6-k*12));o+=`<text class="sl2" x="${px}" y="${py}" text-anchor="${X(s.x[i])>ml+pw-90?'end':'start'}" style="fill:${PCOL[k%PCOL.length]}">${esc(s.name)}</text>`;});
+  return o+'</svg>';
+}
+function stripSVG(st){
+  const n=st.I.length,[r,g,b]=wl2rgb(st.color);let o=`<svg viewBox="0 0 560 74" class="plot" role="img" aria-label="Pattern on the screen"><rect x="0" y="0" width="560" height="52" fill="#000"/>`;
+  const w=560/n;st.I.forEach((v,i)=>{o+=`<rect x="${(i*w).toFixed(2)}" y="0" width="${(w+0.6).toFixed(2)}" height="52" fill="rgb(${Math.round(r*v)},${Math.round(g*v)},${Math.round(b*v)})"/>`;});
+  o+=`<text class="tx" x="0" y="68">${fmtN(st.x0)} ${esc(st.unit)}</text><text class="tx" x="280" y="68" text-anchor="middle">${esc(st.note||'pattern on the screen')}</text><text class="tx" x="560" y="68" text-anchor="end">${fmtN(st.x1)} ${esc(st.unit)}</text></svg>`;return o;
+}
+function radialSVG(rd){
+  const n=rd.I.length,[r,g,b]=wl2rgb(rd.color);let o=`<svg viewBox="0 0 240 262" class="plot" style="max-width:260px" role="img" aria-label="Circular fringes"><rect width="240" height="240" fill="#000" rx="6"/>`;
+  for(let i=n-1;i>=0;i--){const v=rd.I[i];o+=`<circle cx="120" cy="120" r="${((i+1)/n*118).toFixed(2)}" fill="rgb(${Math.round(r*v)},${Math.round(g*v)},${Math.round(b*v)})"/>`;}
+  return o+`<text class="tx" x="120" y="256" text-anchor="middle">${esc(rd.note||'')}</text></svg>`;
+}
+function surfSVG(sf,az,el){
+  const W=560,H=430,cx=W/2,cy=H/2+10,SC=180,A=az*Math.PI/180,E=el*Math.PI/180,ca=Math.cos(A),sa=Math.sin(A),ce=Math.cos(E),se=Math.sin(E);
+  const zr=(sf.zmax-sf.zmin)||1,xr=(sf.x1-sf.x0)||1,yr=(sf.y1-sf.y0)||1,zs=0.9*Math.min(1,Math.max(xr,yr)/zr*0.55);
+  const P=(x,y,z)=>{const xn=(x-(sf.x0+sf.x1)/2)/(xr/2),yn=(y-(sf.y0+sf.y1)/2)/(yr/2),zn=(z-(sf.zmin+sf.zmax)/2)/(zr/2)*0.55;const x1=xn*ca-yn*sa,y1=xn*sa+yn*ca;return [cx+SC*x1,cy-SC*(zn*ce+y1*se*0.9),y1*ce-zn*se];};
+  let o=`<svg viewBox="0 0 ${W} ${H}" class="surf" role="img" aria-label="3D surface">`;
+  if(sf.nx){const n=sf.nx,m=sf.ny,q=[];
+    for(let j=0;j<m-1;j++)for(let i=0;i<n-1;i++){const zz=[sf.z[j*n+i],sf.z[j*n+i+1],sf.z[(j+1)*n+i+1],sf.z[(j+1)*n+i]];if(zz.some(v=>v===null))continue;
+      const xs=[i,i+1,i+1,i].map(k=>sf.x0+(sf.x1-sf.x0)*k/(n-1)),ys=[j,j,j+1,j+1].map(k=>sf.y0+(sf.y1-sf.y0)*k/(m-1)),pp=[0,1,2,3].map(k=>P(xs[k],ys[k],zz[k]));
+      q.push({pp,d:(pp[0][2]+pp[1][2]+pp[2][2]+pp[3][2])/4,c:(zz[0]+zz[1]+zz[2]+zz[3])/4});}
+    q.sort((a,b)=>b.d-a.d);q.forEach(f=>{o+=`<polygon points="${f.pp.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${heatCol((f.c-sf.zmin)/zr)}" stroke="rgba(0,0,0,.28)" stroke-width=".5"/>`;});}
+  const COL=['var(--ink)','var(--glow)','var(--accent2)','#dc2626'];
+  sf.curves.forEach(c=>{const pts=c.x.map((x,i)=>P(x,c.y[i],c.z[i]));o+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${COL[c.col%4]}" stroke-width="${c.arrow||c.col===0?2.6:1.4}" stroke-linecap="round"${c.col===2&&!c.arrow?' opacity=".8"':''}/>`;
+    if(c.arrow&&pts.length>=2){const a=pts[pts.length-2],b=pts[pts.length-1],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1,ux=(b[0]-a[0])/L,uy=(b[1]-a[1])/L;o+=`<polygon points="${b[0]},${b[1]} ${b[0]-ux*10-uy*5},${b[1]-uy*10+ux*5} ${b[0]-ux*10+uy*5},${b[1]-uy*10-ux*5}" fill="${COL[c.col%4]}"/>`;}
+    if(c.name&&pts.length){const b=pts[pts.length-1];o+=`<text class="tx" x="${b[0]+6}" y="${b[1]-4}" style="fill:${COL[c.col%4]};font-weight:700">${esc(c.name)}</text>`;}});
+  sf.pts.forEach(p=>{const q=P(p.x,p.y,p.z);o+=`<circle cx="${q[0]}" cy="${q[1]}" r="6" fill="#dc2626" stroke="#fff" stroke-width="1.5"/>`+(p.label?`<text class="tx" x="${q[0]+9}" y="${q[1]-8}" style="fill:var(--ink);font-weight:700">${esc(p.label)}</text>`:'');});
+  return o+`<text class="tx" x="10" y="${H-8}">${esc(sf.note||'')}${sf.nx?'   (z from '+fmtN(sf.zmin)+' to '+fmtN(sf.zmax)+')':''}</text></svg>`;
+}
+
+function renderPhysics(root,ph0){
+  const vals=ph0.params.map(p=>p.def);let busy=false,dirty=false,last=ph0;const view={az:-40,el:35};
+  root.innerHTML=`<h1>${esc(state.topic)}</h1>
+   <div class="panel"><h3>Step 1 · Set the values (drag the sliders, the experiment changes live)</h3><div id="sliders"></div><div class="row" style="margin-top:8px"><button class="btn alt" id="reset">Reset to defaults</button></div></div>
+   <div class="panel" id="vis"></div><div class="panel"><h3>Step 2 · Measured and calculated values</h3><div class="rd" id="rd"></div><div class="note" id="ex"></div></div>
+   <div class="panel refs"><h3>Step 3 · Study and practice</h3><b>Reference material</b><ul id="refs"></ul><b>Practice</b><ul><li id="prac"></li></ul></div><div id="rl"></div>`; loadRL(root,false);
+  const sl=root.querySelector('#sliders');
+  ph0.params.forEach((p,i)=>{const d=document.createElement('div');d.className='sl';
+    d.innerHTML=`<label for="s${i}">${esc(p.label)}</label><input type="range" id="s${i}" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.def}"><output id="o${i}">${fmtN(p.def)} ${esc(p.unit)}</output>`;
+    sl.appendChild(d);
+    d.querySelector('input').addEventListener('input',e=>{vals[i]=+e.target.value;d.querySelector('output').textContent=fmtN(vals[i])+' '+p.unit;refresh();});});
+  root.querySelector('#reset').onclick=()=>{ph0.params.forEach((p,i)=>{vals[i]=p.def;const el=root.querySelector('#s'+i);el.value=p.def;root.querySelector('#o'+i).textContent=fmtN(p.def)+' '+p.unit;});refresh();};
+  function draw(d){
+    if(!root.querySelector('#vis'))return;
+    let v='<div class="vis">';if(d.radial)v+=radialSVG(d.radial);if(d.strip)v+=`<div style="flex:1 1 100%">${stripSVG(d.strip)}</div>`;
+    if(d.surf)v+=`<div style="flex:1 1 100%"><div id="surfbox">${surfSVG(d.surf,view.az,view.el)}</div><div class="vctl"><label>Turn <input type="range" id="vaz" min="-180" max="180" value="${view.az}"></label><label>Tilt <input type="range" id="vel" min="5" max="85" value="${view.el}"></label><span>drag the sliders to rotate (no waiting)</span></div></div>`;
+    d.plots.forEach((pl,k)=>v+=`<div style="flex:1 1 ${d.plots.length>1?'320px':'100%'}">${plotSVG(pl,k)}</div>`);
+    root.querySelector('#vis').innerHTML=v+'</div>';
+    if(d.surf){const sb=root.querySelector('#surfbox'),upd=()=>{sb.innerHTML=surfSVG(d.surf,view.az,view.el);};root.querySelector('#vaz').oninput=e=>{view.az=+e.target.value;upd();};root.querySelector('#vel').oninput=e=>{view.el=+e.target.value;upd();};}
+    root.querySelector('#rd').innerHTML=d.readouts.map(x=>`<div>${esc(x[0])}</div><div>${esc(x[1])}</div>`).join('');
+    root.querySelector('#ex').textContent=d.explain;
+  }
+  async function refresh(){if(busy){dirty=true;return;}busy=true;try{do{dirty=false;last=await loadPhys(vals);draw(last);}while(dirty);}catch(err){showErr('The simulation could not be updated: '+err.message+'. Is ./corelab still running?');}finally{busy=false;}}
+  root.querySelector('#refs').innerHTML=ph0.refs.map(r=>{const[a,b]=r.split('|');return `<li><a href="${esc(b)}" target="_blank" rel="noopener">${esc(a)}</a></li>`}).join('');
+  root.querySelector('#prac').textContent=ph0.practice;
+  draw(ph0);root.appendChild(backBtn('Back to topics','topic'));
+}
+
+getJSON('/api/curriculum').then(d=>{DATA=d;render();})
+ .catch(()=>{document.getElementById('screen').innerHTML='<p class="lead">Cannot reach the C++ backend. Run ./corelab first.</p>';});
+</script>
+</body>
+</html>
